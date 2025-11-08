@@ -8,3 +8,13 @@ export default defineConfig({
     tailwindcss(),
   ],
 })
+
+module.exports = {
+  theme: {
+    extend: {
+      colors: {
+        brandBlue: '#065c77',
+      },
+    },
+  },
+};
