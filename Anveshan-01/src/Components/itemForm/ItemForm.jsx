@@ -8,7 +8,7 @@ import Input from '../Input';
 import Select from '../Select';
 import Button from '../Button';
 
-function ItemForm({item}) {
+function ItemForm({item, status = 'lost'}) {
 
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState('');
@@ -19,7 +19,7 @@ function ItemForm({item}) {
       title: item?.title || "",
       description: item?.description || "",
       category: item?.category || "electronics",
-      status: item?.status || "lost",
+      status: item?.status || status,
       location: item?.location || "",
     }
   })
@@ -80,12 +80,6 @@ function ItemForm({item}) {
                     placeholder="Description"
                     className="mb-4"
                     {...register("description", { required: true })}
-                />
-                <Select
-                  options={["lost", "found", "claimed"]}
-                  label="Status:"
-                  className="mb-2"
-                  {...register("status", { required: true })}
                 />
                 <Select
                   options={["electronics", "clothing","stationery", "other"]}

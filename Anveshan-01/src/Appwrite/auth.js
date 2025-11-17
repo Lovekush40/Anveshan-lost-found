@@ -77,6 +77,8 @@ class AuthService{
             console.error("Appwrite :: logout :: error", error);
         }
     }
+
+    
 }
 
 const authService = new AuthService()

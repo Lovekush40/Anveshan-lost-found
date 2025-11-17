@@ -1,5 +1,6 @@
 import { Client, Databases, ID, Storage } from "appwrite";
 import conf from "../conf/conf";
+import { Query } from "appwrite";
 
 
 
@@ -85,6 +86,19 @@ export class Service{
         }
     }
 
+    async getItems(queries = [Query.notEqual("status", "claimed")]) {
+    try {
+        return await this.databases.listDocuments(
+        conf.appwriteDatabaseID,
+        conf.appwriteItemsCollectionID,
+        queries
+        );
+    } catch (error) {
+        console.log("Appwrite service :: getPosts :: error", error);
+        return false;
+    }
+    }
+
     async uploadFile(file) {
         try {
         return await this.bucket.createFile(
@@ -110,15 +124,62 @@ export class Service{
                 return false;
         }
     }
+getFilePreview(fileId) {
+    if (!fileId) return null;
+    
+    try {
+        return this.bucket.getFileView(conf.appwriteBucketID, fileId);
+    } catch (error) {
+        console.error("getFileView error:", error);
+        return null;
+    }
+}
+    async createClaim({itemId, claimerId}){
+        try {
+            await this.databases.createDocument(
+                    conf.appwriteDatabaseID,
+                    conf.appwriteClaimsCollectionID,
+                    ID.unique(),
+                    {
+                        itemId,
+                        claimerId,
+                        status: "pending"
+                    }
 
-    getFilePreview(fileId) {
-        if (!fileId) {
-            console.warn("Appwrite service :: getFilePreview :: missing fileId");
-            return null;
+                )
+        } catch (error) {
+            console.error("Appwrite :: Claim :: error", error);
+        }
+    }   
+
+    async searchItems(searchTerm, category = 'all') {
+        const queries = [];
+
+        if (searchTerm.trim()) {
+            queries.push(
+                Query.or([
+                    Query.search("title", searchTerm),
+                    Query.search("description", searchTerm)
+                ])
+            );
         }
 
-        return this.bucket.getFilePreview(conf.appwriteBucketId, fileId);
+        if (category !== 'all') {
+            queries.push(Query.equal("status", category));
         }
+
+        try {
+            return await this.databases.listDocuments(
+                conf.appwriteDatabaseID,
+                conf.appwriteItemsCollectionID,
+                queries
+            );
+        } catch (error) {
+            console.log("Appwrite service :: search Items :: error", error);
+            return false;
+        }
+    }
+
 }
 
 const service = new Service()

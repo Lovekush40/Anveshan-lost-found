@@ -16,6 +16,7 @@ import { Provider } from 'react-redux'
 import store from './store/store.js'
 import App from './App.jsx'
 import Protected from './Components/AuthLayout.jsx'
+import SingleItem from './pages/SingleItem.jsx'
 
 
 
@@ -27,6 +28,10 @@ const router = createBrowserRouter([
       {
         path: '/',
         element: <Home/>
+      },
+      {
+        path: '/post/:id',
+        element: <SingleItem />
       },
       {
         path: '/login',
